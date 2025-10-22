@@ -40,7 +40,7 @@
         },
         {
           "value": "MODELO Y BIN SOPORT",
-          "background": "#00ff00",
+          "background": "#999999",
           "fontColor": "#000000",
           "bold": true,
           "italic": false,
@@ -66,7 +66,7 @@
         },
         {
           "value": "IMEI",
-          "background": "#00ff00",
+          "background": "#999999",
           "fontColor": "#000000",
           "bold": true,
           "italic": false,
@@ -22252,156 +22252,6 @@
           "monetary": false,
           "rowspan": 1,
           "colspan": 6
-        }
-      ]
-    ]
-  },
-  {
-    "name": "PRUEBAS",
-    "frozenRows": 1,
-    "columnWidths": [
-      100,
-      100
-    ],
-    "data": [
-      [
-        {
-          "value": "COL1 ",
-          "background": "#ffffff",
-          "fontColor": "#000000",
-          "bold": false,
-          "italic": false,
-          "underline": false,
-          "align": "general-left",
-          "fontsize": 10,
-          "monetary": false,
-          "rowspan": 1,
-          "colspan": 1
-        },
-        {
-          "value": "COL2",
-          "background": "#ffffff",
-          "fontColor": "#000000",
-          "bold": false,
-          "italic": false,
-          "underline": false,
-          "align": "general-left",
-          "fontsize": 10,
-          "monetary": false,
-          "rowspan": 1,
-          "colspan": 1
-        }
-      ],
-      [
-        {
-          "value": "LOL",
-          "background": "#ffffff",
-          "fontColor": "#000000",
-          "bold": false,
-          "italic": false,
-          "underline": false,
-          "align": "general-left",
-          "fontsize": 10,
-          "monetary": false,
-          "rowspan": 1,
-          "colspan": 1
-        },
-        {
-          "value": "LOL2",
-          "background": "#ffffff",
-          "fontColor": "#000000",
-          "bold": false,
-          "italic": false,
-          "underline": false,
-          "align": "general-left",
-          "fontsize": 10,
-          "monetary": false,
-          "rowspan": 1,
-          "colspan": 1
-        }
-      ],
-      [
-        {
-          "value": "BOB",
-          "background": "#ffffff",
-          "fontColor": "#000000",
-          "bold": false,
-          "italic": false,
-          "underline": false,
-          "align": "general-left",
-          "fontsize": 10,
-          "monetary": false,
-          "rowspan": 1,
-          "colspan": 1
-        },
-        {
-          "value": "IBA ",
-          "background": "#ffffff",
-          "fontColor": "#000000",
-          "bold": false,
-          "italic": false,
-          "underline": false,
-          "align": "general-left",
-          "fontsize": 10,
-          "monetary": false,
-          "rowspan": 1,
-          "colspan": 1
-        }
-      ],
-      [
-        {
-          "value": "BEB",
-          "background": "#ffffff",
-          "fontColor": "#000000",
-          "bold": false,
-          "italic": false,
-          "underline": false,
-          "align": "general-left",
-          "fontsize": 10,
-          "monetary": false,
-          "rowspan": 1,
-          "colspan": 1
-        },
-        {
-          "value": "A HACER",
-          "background": "#ffffff",
-          "fontColor": "#000000",
-          "bold": false,
-          "italic": false,
-          "underline": false,
-          "align": "general-left",
-          "fontsize": 10,
-          "monetary": false,
-          "rowspan": 1,
-          "colspan": 1
-        }
-      ],
-      [
-        {
-          "value": "SE",
-          "background": "#ffffff",
-          "fontColor": "#000000",
-          "bold": false,
-          "italic": false,
-          "underline": false,
-          "align": "general-left",
-          "fontsize": 10,
-          "monetary": false,
-          "rowspan": 1,
-          "colspan": 1
-        },
-        {
-          "value": "MALABARES",
-          "background": "#ffffff",
-          "fontColor": "#000000",
-          "bold": false,
-          "italic": false,
-          "underline": false,
-          "align": "general-left",
-          "fontsize": 10,
-          "monetary": false,
-          "rowspan": 1,
-          "colspan": 1
         }
       ]
     ]
