@@ -1,0 +1,108 @@
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      background: #fafafa;
+        font-size: 20px;
+      }
+    h1 {
+      align-items: center;
+      gap: 8px;
+    }
+    .select-nativo {
+    margin: 10px 0 20px;
+    padding: 5px;
+    font-size: 1.7em;
+    font-weight: bold;
+    border: 2px solid black;
+      }
+table {
+  border-collapse: collapse; /* Hace que las celdas compartan los bordes */
+}
+
+.container-flex{
+display: none;
+}
+
+.tablas {
+width: 70%;
+}
+
+td, th {
+        border: 1.5px solid black;
+        padding: 8px;
+      font-size: 14px;
+    }
+    td {
+      vertical-align: middle;
+      border: 1px black solid;
+    }
+.td-7 { font-size: 16px; }
+.td-8 { font-size: 17px; }
+.td-9 { font-size: 18px; }
+.td-10 { font-size: 19px; }
+.td-11 { font-size: 20px; }
+.td-12 { font-size: 21px; }
+.td-13 { font-size: 22px; }
+.td-14 { font-size: 23px; }
+.td-15 { font-size: 24px; }
+.td-16 { font-size: 25px; }
+.td-17 { font-size: 26px; }
+.td-18 { font-size: 27px; }
+.td-19 { font-size: 28px; }
+.td-20 { font-size: 29px; }
+
+.img-carga{
+height: 80px;
+}
+
+.pantalla_carga {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 80vh;
+    pisition: fixed;
+    top: 0;
+    left: 0;
+    z-index: 100000;
+  }
+
+.table-wrapper {
+  margin-bottom: 6em;
+}
+
+@media screen and (max-width: 980px) {
+
+.select-nativo {
+    font-size: 3.5em;
+}
+
+.img-carga{
+height: 300px;
+}
+
+h1 {
+font-size: 2.5em;
+}
+
+.td-7 { font-size: 22px; }
+.td-8 { font-size: 23px; }
+.td-9 { font-size: 24px; }
+.td-10 { font-size: 25px; }
+.td-11 { font-size: 26px; }
+.td-12 { font-size: 27px; }
+.td-13 { font-size: 28px; }
+.td-14 { font-size: 29px; }
+.td-15 { font-size: 30px; }
+.td-16 { font-size: 31px; }
+.td-17 { font-size: 32px; }
+.td-18 { font-size: 33px; }
+.td-19 { font-size: 34px; }
+.td-20 { font-size: 35px; }
+
+
+.tablas {
+width: 98%;
+}
+
+}

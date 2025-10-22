@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Visualizador de Google Sheets</title>
+  <link rel="stylesheet" href="estilos.css">
+</head>
+<body>
+
+  <div class="container" id="contener">
+      <div class="pantalla_carga">
+        <img src="https://i.ibb.co/tp6X8VKQ/loading.gif" alt="Cargando..." class="img-carga">
+      </div>
+  </div>
+
+  <div class="container-flex" id="contener-tablas">
+    <center>
+      <h1>LISTA DE PRECIOS <br id="disponible"> ACTUALIZADA EL DÍA <span id="fecha"></span></h1>
+      <select id="sheetSelect" class="select-nativo" value="--Seleccione una Opcion--">
+        <option value="TODO_">TODO</option>
+      </select>
+      <br><br>
+      <div id="tableContainer"></div>
+    </center>
+  </div>
+
+  <script>
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw3KzEery9sgQGMqv-NJVy2WduPwuPPZXYEbtT7X5nq5Ma_ADQXDCvhsL36lavJYHqD/exec";
+    const select = document.getElementById("sheetSelect");
+
+    let sheetData = [];
+
+    function formatMoney(value) {
+      if (typeof value !== "number") value = parseFloat(value);
+      if (isNaN(value)) return value;
+      return "$" + value.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ".").replace(".", ",").replace(/,(\d{2})$/, ",$1");
+    }
+
+    function obtenerValorSelectOPrimero(valorBuscado) {
+      if (!select || !select.options.length) {
+        console.warn('Select no encontrado o sin opciones');
+        return null;
+      }
+
+      for (let option of select.options) {
+        if (option.textContent === valorBuscado) {
+          select.value = option.value;
+          return option.value;
+        }
+      }
+      return select.options[0].value;
+    }
+
+    function loadData() {
+  fetch('datos.json')
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('No se pudo cargar el archivo JSON');
+      }
+	return response.json();
+    })
+.then(data => {
+
+        sheetData = data;
+        data.forEach((sheet, i) => {
+          const opt = document.createElement("option");
+          opt.value = i;
+          opt.textContent = sheet.name;
+          select.appendChild(opt);
+        });
+        mostrarFecha();
+
+        var url_actual = window.location.href;
+        var letra_buscada = '?';
+        var pos = url_actual.indexOf(letra_buscada);
+        var param1 = "TODO_";
+        if (pos > 0) {
+          param1 = url_actual.substr(pos + 1);
+          param1 = decodeURIComponent(param1);
+        }
+        renderTable(obtenerValorSelectOPrimero(param1));
+
+        document.getElementById('contener-tablas').classList.remove("container-flex");
+        document.getElementById('contener').classList.add("container-flex");
+})
+    .catch(error => {
+      console.error('Error al cargar el JSON:', error);
+    });
+}
+
+
+    function renderTable(indexOrAll) {
+      const container = document.getElementById("tableContainer");
+      container.innerHTML = "";
+
+      if (indexOrAll === "TODO_") {
+        sheetData.forEach((sheet, idx) => {
+          container.appendChild(createTable(sheet));
+          container.appendChild(document.createElement("br"));
+          container.appendChild(document.createElement("br"));
+        });
+      } else {
+        const sheet = sheetData[indexOrAll];
+        const table = createTable(sheet);
+        container.appendChild(table);
+      }
+    }
+
+    // escape HTML simple
+    function escapeHtml(str) {
+      return String(str)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    // Construcción de la tabla
+function createTable(sheet) {
+  const frozenRowsCount = sheet.frozenRows || 0;
+  const wrapper = document.createElement("div");
+  wrapper.classList.add("table-wrapper");
+
+  const headerTable = document.createElement("table");
+  headerTable.classList.add("tablas");
+  headerTable.style.position = "sticky";
+  headerTable.style.top = "0";
+  headerTable.style.zIndex = "10";
+  headerTable.id = "header-" + select.value;
+
+  const bodyTable = document.createElement("table");
+  bodyTable.classList.add("tablas");
+  bodyTable.id = "body-" + select.value;
+
+  // número de columnas reales según el servidor (sheet.columnWidths)
+  const colCount = (sheet.columnWidths && sheet.columnWidths.length) ? sheet.columnWidths.length : 0;
+
+  // Suma total de anchos por columna (fallback si no hay fila de referencia)
+  const totalWidthFallback = sheet.columnWidths ? sheet.columnWidths.reduce((a, b) => a + b, 0) : 0;
+
+  // Buscar una fila de referencia: que tenga todas las columnas (i.e. suma de colspan == colCount)
+  // y preferiblemente sin colspans > 1 (todas colspan === 1)
+  let referenceRowFound = false;
+  let totalWidth = totalWidthFallback;
+
+  for (let r = 0; r < sheet.data.length; r++) {
+    const row = sheet.data[r];
+    // calcular suma de colspan en esa fila
+    const sumColspan = row.reduce((s, cell) => s + (cell.colspan ? cell.colspan : 1), 0);
+    const hasMerged = row.some(cell => (cell.colspan && cell.colspan > 1) || (cell.rowspan && cell.rowspan > 1));
+    if (sumColspan === colCount && !hasMerged) {
+      // fila de referencia perfecta: usamos la suma de los anchos de las columnas que existen
+      referenceRowFound = true;
+      totalWidth = totalWidthFallback; // ya representa la suma de todas las columnas
+      break;
+    }
+  }
+
+  // Si no se encontró una fila sin merges, usamos fallback (suma de sheet.columnWidths)
+  if (!referenceRowFound) {
+    totalWidth = totalWidthFallback;
+  }
+
+  // Calcular porcentaje por columna (usar 0 si falta info)
+  const columnPercents = {};
+  for (let i = 0; i < colCount; i++) {
+    const w = sheet.columnWidths && sheet.columnWidths[i] ? sheet.columnWidths[i] : 0;
+    columnPercents[i] = totalWidth > 0 ? (w / totalWidth) * 100 : 0;
+  }
+
+  // Construir filas; para poder mapear celdas a columnas reales usamos colPointer
+  sheet.data.forEach((row, rowIndex) => {
+    const tr = document.createElement("tr");
+    let usedPercentRow = 0;    // para ajustar redondeo en la última celda de la fila
+    let colPointer = 0;       // índice de columna real donde empieza la siguiente celda
+
+    // Precalcular el número de celdas de la fila (para detectar la última)
+    const visibleCellsCount = row.length;
+
+    row.forEach((cell, visibleIndex) => {
+      const td = document.createElement("td");
+
+      // Contenido
+	  if(cell.fontColor && cell.fontColor.toLowerCase() === "#00ff00"){
+		td.innerHTML = "";
+	  }
+          else{
+	  let rawText = cell.monetary ? formatMoney(cell.value) : cell.value || "";
+          const escaped = escapeHtml(rawText);
+          const withBreaks = escaped.replace(/\r?\n/g, "<br>");
+          td.innerHTML = withBreaks;
+	  }
+
+      // Estilos
+      td.style.backgroundColor = cell.background || "transparent";
+      td.style.color = cell.fontColor || "#000000";
+      td.style.fontWeight = cell.bold ? "bold" : "normal";
+      td.style.fontStyle = cell.italic ? "italic" : "normal";
+      td.style.textAlign = cell.align || "left";
+      td.style.textDecoration = cell.underline ? "underline" : "none";
+      const fontSize = cell.fontsize ? parseInt(cell.fontsize, 10) : 14;
+      td.classList.add(`td-${fontSize}`);
+
+      // colspan/rowspan
+      const colspan = cell.colspan && cell.colspan > 1 ? cell.colspan : 1;
+      if (cell.rowspan > 1) td.rowSpan = cell.rowspan;
+      if (colspan > 1) td.colSpan = colspan;
+      td.style.whiteSpace = (colPointer === 0 && colspan === 1) ? "nowrap" : "normal";
+
+      // calcular ancho porcentual sumando las columnas reales que ocupa
+      let percent = 0;
+      for (let cc = colPointer; cc < colPointer + colspan && cc < colCount; cc++) {
+        percent += columnPercents[cc] || 0;
+      }
+
+      // Si es la última celda visible de la fila, darle lo que falta para llegar a 100 (evita pérdidas por redondeo)
+      const isLastVisibleCell = (visibleIndex === visibleCellsCount - 1);
+      if (isLastVisibleCell) {
+        const remaining = Math.max(0, 100 - usedPercentRow);
+        // si remaining es razonable (no 0), usarlo; sino usar lo calculado
+        if (remaining > 0) {
+          td.style.width = remaining.toFixed(2) + "%";
+          usedPercentRow += remaining;
+        } else {
+          td.style.width = percent.toFixed(2) + "%";
+          usedPercentRow += percent;
+        }
+      } else {
+        td.style.width = percent.toFixed(2) + "%";
+        usedPercentRow += percent;
+      }
+
+      tr.appendChild(td);
+
+      // avanzar colPointer por la cantidad de columnas reales que ocupó esta celda
+      colPointer += colspan;
+    });
+
+    if (tr.children.length > 0) {
+      if (rowIndex < frozenRowsCount) {
+        headerTable.appendChild(tr);
+      } else {
+        bodyTable.appendChild(tr);
+      }
+    }
+  });
+
+  wrapper.appendChild(headerTable);
+  wrapper.appendChild(bodyTable);
+
+  return wrapper;
+}
+
+    function mostrarFecha() {
+      const today = new Date();
+      const day = ("0" + today.getDate()).slice(-2);
+      const month = ("0" + (today.getMonth() + 1)).slice(-2);
+      const year = today.getFullYear();
+      const fecha = day + "/" + month + "/" + year;
+      document.getElementById("fecha").innerHTML = fecha;
+    }
+
+    document.getElementById("sheetSelect").addEventListener("change", e => {
+      renderTable(e.target.value);
+    });
+
+    loadData();
+  </script>
+</body>
+</html>
